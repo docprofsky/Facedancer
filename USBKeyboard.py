@@ -2,6 +2,8 @@
 #
 # Contains class definitions to implement a USB keyboard.
 
+from struct import pack
+
 import greatfet
 
 from facedancer.USB import *
@@ -13,8 +15,16 @@ from facedancer.USBEndpoint import *
 class USBKeyboardInterface(USBInterface):
     name = "USB keyboard interface"
 
-    hid_descriptor = b'\x09\x21\x10\x01\x00\x01\x22\x2b\x00'
     report_descriptor = b'\x05\x01\x09\x06\xA1\x01\x05\x07\x19\xE0\x29\xE7\x15\x00\x25\x01\x75\x01\x95\x08\x81\x02\x95\x01\x75\x08\x81\x01\x19\x00\x29\x65\x15\x00\x25\x65\x75\x08\x95\x01\x81\x00\xC0'
+
+    hid_descriptor = pack("<BBHBBBH",
+                    0x09,                   # bLength
+                    USB.desc_type_hid,      # bDescriptorType
+                    0x110,                  # bcdHID
+                    0x00,                   # bCountryCode
+                    0x01,                   # bNumDescriptors
+                    USB.desc_type_report,   # bDescriptorType
+                    len(report_descriptor)) # wDescriptorLength
 
     def __init__(self, verbose=0):
         descriptors = { 
